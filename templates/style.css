@@ -1,0 +1,67 @@
+h1, p, .error text-danger, .error text-info, .dropdown-item
+{
+    text-align: center;
+}
+nav
+{
+    background-color: #facc88;
+    padding-right: 0px;
+    margin-block-end: 0px;
+}
+#userDropdown
+{
+    position:absolute;right:0px
+}
+.dropdown:hover .dropdown-menu
+{
+    display:block;
+    right:0px;
+    left:auto;
+}
+img
+{
+    padding-left: 35%;
+}
+textarea
+{
+    height: 150px;
+}
+.radio-inline
+{
+    margin-right: 25px;
+}
+.jumbotron    
+{
+    background-color:#facc88;
+    border-radius:2rem;
+}
+#mainContainer
+{
+    padding-top: 1rem;
+    display:flex
+}
+#homepageTitle
+{
+    padding-top: 2.5%;
+}
+#Books_Container
+{
+    padding-top: 2.5%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+#Book_View
+{
+    background-color:#fdc268;
+    margin:auto;
+    min-width: 250pt;
+    max-width: 250pt;
+    margin-top: 30px;
+}
+#review_View
+{
+    margin:auto;
+    min-width: 55%;
+    max-width: 55%;
+    margin-top: 30px;
+}

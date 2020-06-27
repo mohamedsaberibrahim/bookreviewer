@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Book Reviewer
+{% endblock %}
+
+{% block body %}
+<div class="container" id="mainContainer">
+    <div class="jumbotron" id="signingForms">
+        
+        <h1 class="display-4">Books Reviewer</h1>
+
+        <hr class="my-4">
+
+        <p class="display-4">Sign in</p>
+        <form action="{{ url_for('signin') }}" method="post">
+
+            <div class="form-group">
+                <input class="form-control" name="name" type="text" placeholder="Username" required>
+            </div>
+
+            <div class="form-group">
+                <input class="form-control" name="password" type="password" placeholder="Password" required>
+                <span class="error text-danger">{{signinFormError}}</span>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-secondary btn-block">Sign in</button>
+            </div>
+
+        </form>
+
+        <hr class="my-4">
+
+        <p class="display-4">Sign up</p>
+
+        <form action="{{ url_for('signup') }}" method="post">
+
+            <div class="form-group">
+                <label>Email address</label>
+                <input class="form-control" name="Email" type="text" placeholder="email@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label>Please enter unique username</label>
+                <input class="form-control" name="name" type="text" placeholder="Username" required>
+            </div>
+
+            <div class="form-group">
+                <label>Please enter password</label>
+                <input class="form-control" name="password" type="password" placeholder="Password" required>
+            </div>
+
+            <div class="form-group">
+                <label>Please re-enter password</label>
+                <input class="form-control" name="password_check" type="password" placeholder="Password" required>
+                <span class="error text-danger">{{signupFormError}}</span>
+                <span class="error text-info">{{signupFormInfo}}</span>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-dark btn-block">Sign up</button>
+            </div>
+        </form>
+        
+    </div>
+    <p>
+        <img src="https://images.coachingforleaders.com/VWyjQVo.ywor~31d5d/w:700/h:1054/q:90/http://coachingforleaders.com/wp-content/uploads/2016/02/bookstack.jpg"/>
+    </p>
+</div>
+{% endblock %}

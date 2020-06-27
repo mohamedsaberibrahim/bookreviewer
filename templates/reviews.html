@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Book
+{% endblock %}
+{% block body %}
+
+{% include "navbar.html" %}
+    <p class="display-3" id="homepageTitle">Book Reviews</p>
+    <div class="row" id="Books_Container">
+        {% for book in books %}
+        <div class="jumbotron" id="review_View">
+            <a href="{{ url_for('book', book_id=book.book_id) }}">
+                <p>{{book.title}}</p>
+            </a>
+            <p>{{ reviews[loop.index - 1].review_content }}</p>
+            <p>Rating: {{ reviews[loop.index - 1].review_rate }}</p>
+        </div>
+        {% else %}
+        <div class="jumbotron" id="review_View">
+            <p>No reviews found!</p>
+            <p>Go back to a book and add a review!</p>
+        {% endfor %}
+        </div>
+    </div>
+{% endblock %}

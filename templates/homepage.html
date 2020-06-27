@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block body %}
+
+{% include "navbar.html" %}
+<p class="display-4" id="homepageTitle">{{title}}</p>
+  <div class="row" id="Books_Container">
+
+        {% for Book in Books %}
+        <div class="col-sm">
+            <div class="jumbotron" id="Book_View">
+            <a href="{{ url_for('book', book_id=Book.book_id) }}">
+            <p>{{ Book.title }}</p>
+            </a>
+            <p>- Writer: {{ Book.author }}</p>
+            <p>- Year: {{ Book.year }}</p>
+            </div>
+        </div>
+        {% else %}
+            {% if title != "Error! Not found (this page does not exist)."%}
+            <div class="col-sm">
+                <div class="jumbotron" id="Book_View">
+                    <p>No books found!</p>
+                    <p>Try to search again!</p>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+</div>
+{% endblock %}

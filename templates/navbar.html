@@ -1,0 +1,28 @@
+<nav class="navbar navbar-light bg-light">
+
+    <a class="navbar-brand" href="{{ url_for('homepage') }}">Book Reviewer</a>
+    <form class="form-inline" action="{{ url_for('search') }}" method="post">
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <select class="nav-link input-group-text" name="search_type">
+                    <div class="dropdown-menu nav-link">
+                        <option class="dropdown-item" value="title">Book</option>
+                        <option class="dropdown-item" value="author">Author</option>
+                        <option class="dropdown-item" value="year">Year</option>
+                        <option class="dropdown-item" value="isbn">ISBN</option>
+                    </div>
+                </select>
+            </div>
+            <input type="text" class="form-inline form-control" placeholder="Search" name="search_word" value="{{Value}}" size="100" required>
+            <button class="btn btn-outline-dark " type="submit">Search</button>
+        </div>
+    </form>
+    <div class="dropdown">
+        <a class="dropdown-toggle">{{User.username}}</a>
+        <div class="dropdown-menu dropdown-menu-right">
+            <a class="dropdown-item" href="{{ url_for('getuserreviews') }}">My reviews</a>
+            <a class="dropdown-item" href="{{ url_for('logout') }}">Log out</a>
+        </div>
+    </div>
+</nav>

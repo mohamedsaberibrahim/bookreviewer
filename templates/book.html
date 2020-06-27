@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Book
+{% endblock %}
+
+{% block body %}
+
+{% include "navbar.html" %}
+<p class="display-2" id="homepageTitle">Book Details</p>
+    <div class="jumbotron" id="Book_View">
+        <p>{{ book_data.title }}</p>
+        <p>Writer: {{ book_data.author }}</p>
+        <p>Publication year: {{ book_data.year}}</p>
+        <p>ISBN number: {{book_data.isbn}}</p>
+        {% if goodreadsData['average_rating'] != False %}
+            <hr>
+            <p>From Goodreads</p>
+            <p>Rating: {{goodreadsData['average_rating']}}</p>
+            <p>Ratings count: {{goodreadsData['reviews_count']}}</p>
+        {% endif %}
+    </div>
+    <p class="display-4" id="homepageTitle">Book Reviews</p>
+    <div class="row" id="Books_Container">
+        {% for review in reviews %}
+        <div class="jumbotron" id="review_View">
+            <p>{{ review.review_content }}</p>
+            <p>Rating: {{ review.review_rate }}</p>
+        </div>
+        {% else %}
+        <div class="jumbotron" id="review_View">
+            <p>No reviews found for this book!</p>
+            <p>Add your review!</p>
+        {% endfor %}
+        </div>
+        <div class="jumbotron" id="review_View">
+            <form action="{{ url_for('addreview', book_id=book_data.book_id) }}" method="post">
+                <label class="radio-inline"></label>
+                <label class="radio-inline"><input type="radio" value="1" name="optradio">   1</label>
+                <label class="radio-inline"><input type="radio" value="2" name="optradio">   2</label>
+                <label class="radio-inline"><input type="radio" value="3" name="optradio">   3</label>
+                <label class="radio-inline"><input type="radio" value="4" name="optradio">   4</label>
+                <label class="radio-inline"><input type="radio" value="5" name="optradio" checked>   5</label>
+                <div class="form-group">
+                    <textarea class="form-control" name="review_content" type="text" placeholder="Review Content" required></textarea>
+                    <span class="error text-danger">{{addReviewError}}</span>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-dark btn-block">Add a review</button>
+                </div>
+    
+            </form>
+        </div>
+    </div>
+{% endblock %}
