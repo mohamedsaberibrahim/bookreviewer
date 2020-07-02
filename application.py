@@ -4,7 +4,6 @@ from flask import Flask, session, render_template, jsonify, request, redirect, u
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from models import *
 from  sqlalchemy.sql.expression import func, select
 
 app = Flask(__name__)
@@ -48,6 +47,7 @@ def signin():
 
     else:
         session['id'] = user.user_id
+        session['username'] = user.username
         return redirect(url_for('homepage'))
 
 
@@ -83,8 +83,7 @@ def homepage():
     try:
         if session['id']:
             books = db.execute("SELECT * FROM books ORDER BY random() LIMIT 10").fetchall()
-            user = db.execute("SELECT * FROM users where user_id = :id",{"id": session['id']}).fetchone()
-            return render_template("homepage.html", Books=books, User=user, title="Recommendations")
+            return render_template("homepage.html", Books=books, username=session['username'], title="Recommendations")
     except KeyError:
         return render_template("index.html")
     
@@ -94,14 +93,14 @@ def page_not_found(e):
     # note that we set the 404 status explicitly
     try:
         if session['id']:
-            user = db.execute("SELECT * FROM users where user_id = :id",{"id": session['id']}).fetchone()
-            return render_template("homepage.html", User=user, title="Error! Not found (this page does not exist).")
+            return render_template("homepage.html", username=session['username'], title="Error! Not found (this page does not exist).")
     except KeyError:
         return render_template("index.html")
 
 @app.route("/logout", methods=["GET"])
 def logout():
     session.pop('id', None)
+    session.pop('username', None)
     return redirect(url_for('index'))
 
 
@@ -114,8 +113,7 @@ def search():
         books = db.execute("SELECT * FROM books where {} Like '%{}%'".format(search_by, search_word)).fetchall()
     else:
         books = db.execute("SELECT * FROM books where {} = '{}'".format(search_by, search_word)).fetchall()
-    user = db.execute("SELECT * FROM users where user_id = :id",{"id": session['id']}).fetchone()
-    return render_template("homepage.html", Books=books, User=user,
+    return render_template("homepage.html", Books=books, username=session['username'],
      title="Search results of books with {}: {}".format(search_by, search_word))
 
 @app.route("/books/<int:book_id>")
@@ -123,15 +121,14 @@ def book(book_id):
     try:
         if session['id']:
             book = db.execute("SELECT * FROM books where book_id = '{}'".format(book_id)).fetchone()
-            user = db.execute("SELECT * FROM users where user_id = :id",{"id": session['id']}).fetchone()
             if book is not None:
                 reviews = db.execute("SELECT * FROM reviews where book_id = :id",{"id": book.book_id}).fetchall()
                 goodreadsData = api_getdata(book)
                 addReviewError = request.args.get('addReviewError') if request.args.get('addReviewError') is not None else ""
                 return render_template("book.html", book_data=book, goodreadsData=goodreadsData,
-                reviews=reviews, User=user, addReviewError=addReviewError)
+                reviews=reviews, username=session['username'], addReviewError=addReviewError)
             else:
-                return render_template("homepage.html", User=user, title="Error! Not found (this page does not exist).")
+                return render_template("homepage.html", username=session['username'], title="Error! Not found (this page does not exist).")
     except KeyError:
         return render_template("index.html")
 
@@ -173,13 +170,8 @@ def addreview(book_id):
 def getuserreviews():
     try:
         if session['id']:
-            reviews = db.execute("SELECT * FROM reviews where user_id = :id",{"id": session['id']}).fetchall()
-            books_id = []
-            for review in reviews:
-                books_id.append(review.book_id)
-            books = db.execute("SELECT * FROM books where book_id IN {}".format(tuple(books_id) + (0,))).fetchall()
-            user = db.execute("SELECT * FROM users where user_id = :id",{"id": session['id']}).fetchone()
-            return render_template("reviews.html", books=books, reviews=reviews, User=user)
+            reviews = db.execute("SELECT books.book_id, books.title, reviews.review_content, reviews.review_rate FROM reviews left join  books ON reviews.book_id=books.book_id where user_id = :id",{"id": session['id']}).fetchall()
+            return render_template("reviews.html", reviews=reviews, username=session['username'])
     except KeyError:
         return render_template("index.html")
 
@@ -191,15 +183,17 @@ def books_api(isbn):
     if book is None:
         return jsonify({"error": "Invalid book_id"}), 422
 
-    average_score = db.execute("SELECT AVG(review_rate) FROM reviews where book_id = {}".format(book.book_id)).fetchall()
+    average_score_output = db.execute("SELECT AVG(review_rate) FROM reviews where book_id = {}".format(book.book_id)).fetchall()
     review_count = db.execute("SELECT COUNT(*) FROM reviews where book_id = {}".format(book.book_id)).fetchall()
-    print(average_score, average_score[0][0])
-    print(review_count, review_count[0][0])
+    if average_score_output[0][0] is None:
+        average_score_api = 0 
+    else:
+        average_score_api = average_score_output[0][0]
     return jsonify({
             "title": book.title,
             "author": book.author,
             "year": book.year,
             "isbn": book.isbn,
             "review_count": str(review_count[0][0]),
-            "average_score": str(average_score[0][0])
+            "average_score": str(average_score_api)
         }), 200
